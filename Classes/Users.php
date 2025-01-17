@@ -17,5 +17,17 @@ class Users {
         $this->roles = $roles;
     }
 
+    // Accesseurs (Getters)
+    public function getFName() { return $this->f_name; }
+    public function getLName() { return $this->l_name; }
+    public function getEmail() { return $this->email; }
+    public function getRoles() { return $this->roles; }
+
+    // Modificateurs (Setters)
+    public function setFName($f_name) { $this->f_name = $f_name; }
+    public function setLName($l_name) { $this->l_name = $l_name; }
+    public function setPwd($pwd_hashed) { $this->pwd_hashed = $pwd_hashed; }
+    public function setRoles($roles) { $this->roles = $roles; }
+
 
 }
