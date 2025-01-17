@@ -52,7 +52,7 @@ if (isset($_POST['exit'])) {
     <title>Register - Youdemy</title>
 </head>
 
-<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Image-01.jpg');">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Images/Image-01.jpg');">
 
     <div class="absolute inset-0 bg-black opacity-50"></div>
 
