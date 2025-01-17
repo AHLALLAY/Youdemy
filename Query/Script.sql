@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS youdemy;
 CREATE DATABASE youdemy;
 USE youdemy;
 CREATE TABLE users(
@@ -6,12 +7,10 @@ CREATE TABLE users(
     l_name VARCHAR(15),
     email VARCHAR(50) UNIQUE,
     pwd_hashed VARCHAR(100),
-    roles VARCHAR(10) DEFAULT 'Etudiant',
-    birth_day DATE,
-    created_at DATETIME,
-    avatar VARCHAR(100),
-    is_suspended int,
-    is_deleted int
+    roles VARCHAR(12),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_suspended int DEFAULT 0,
+    is_deleted int DEFAULT 0
 );
 
 CREATE TABLE category(
@@ -28,7 +27,7 @@ CREATE TABLE cours(
     created_at DATETIME,
     users_id int,
     category_id int,
-    Foreign Key (users_id) REFERENCES users_id(users_id),
+    Foreign Key (users_id) REFERENCES users(users_id),
     Foreign Key (category_id) REFERENCES category(category_id)
 );
 
@@ -43,5 +42,16 @@ CREATE TABLE cours_tags(
     cours_id INT,
     tags_id INT,
     Foreign Key (cours_id) REFERENCES cours(cours_id),
-    Foreign Key (tags_id) REFERENCES tags(tags_id)
+    Foreign Key (tags_id) REFERENCES tags(tag_id)
 );
+
+CREATE TABLE cours_etudiant(
+    ids INT PRIMARY KEY AUTO_INCREMENT,
+    cours_id INT,
+    etudiant_id INT,
+    Foreign Key (cours_id) REFERENCES cours(cours_id),
+    Foreign Key (etudiant_id) REFERENCES users(users_id)
+);
+
+INSERT INTO users (f_name, l_name, email, pwd_hashed, roles)
+VALUES('Ahlallay', 'Abderrahmane', 'admin@admin.com', '$2y$10$soOyVvC/b2OzxTU45mlYp.mpZnU51pm1sLxqc91JqJyVabrF3lP4e', 'admin');
