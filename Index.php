@@ -65,7 +65,7 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
             </div>
             <div class="flex-1">
                 <div class="rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
-                    <img src="/Asset/Image-01.jpg" alt="Illustration apprentissage" class="object-cover w-full h-[400px]">
+                    <img src="/Asset/Images/Image-01.jpg" alt="Illustration apprentissage" class="object-cover w-full h-[400px]">
                 </div>
             </div>
         </section>
