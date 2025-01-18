@@ -1,31 +1,50 @@
 <?php
-
-// Inclure les classes nécessaires
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Users.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Database.php';
 
-// Démarrer la session si ce n'est pas déjà fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// gestion des actions
-if(isset($_POST['login'])){
+if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $pwd = $_POST['pwd'];
-    $user = new Users(null,null, $email, $pwd, null);
-    if(!empty($email) && !empty($pwd)){
-        $result = $user->isExist($email);
-        if($result){
-            $user->login();
-            $_SESSION['email'] = $email;
-            
-        }else{
-            throw new Exception("this email doesn't exist !!");
+
+    if (!empty($email) && !empty($pwd)) {
+        $user = new Users(null, null, $email, $pwd, null);
+
+        try {
+            if ($user->isExist($email)) {
+                $role = $user->login();
+
+                $_SESSION['email'] = $email;
+                $_SESSION['role'] = $role;
+
+                switch ($role) {
+                    case 'admin':
+                        header('Location: Admin.php');
+                        break;
+                    case 'etudiant':
+                        header('Location: Etudiant.php');
+                        break;
+                    case 'enseignant':
+                        header('Location: Enseignant.php');
+                        break;
+                    default:
+                        header('Location: /Index.php');
+                        break;
+                }
+                exit;
+            } else {
+                $_SESSION['error'] = "This email doesn't exist!";
+            }
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
         }
+    } else {
+        $_SESSION['error'] = "Email and password are required.";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +57,7 @@ if(isset($_POST['login'])){
     <title>Login</title>
 </head>
 
-<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Images/Image-01.jpg');">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Image-01.jpg');">
     <div class="absolute inset-0 bg-black opacity-50"></div>
     <div class="relative z-10 w-full max-w-md p-6">
         <main>
@@ -48,10 +67,9 @@ if(isset($_POST['login'])){
                     <button name="exit" class="text-[#FEFEFE] text-3xl hover:text-[#B4CAE2] transition-colors duration-300">&times;</button>
                 </div>
                 <?php
-                // Afficher les messages d'erreur
                 if (isset($_SESSION['error'])) {
                     echo '<div class="mb-4 text-red-500 text-center">' . $_SESSION['error'] . '</div>';
-                    unset($_SESSION['error']); // Supprimer le message après l'affichage
+                    unset($_SESSION['error']);
                 }
                 ?>
                 <div class="space-y-4">

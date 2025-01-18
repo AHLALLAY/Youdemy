@@ -72,7 +72,7 @@ class Users {
                 throw new Exception("Email or password incorrect.");
             }
     
-            return true;
+            return $user['roles'];
         }catch(PDOException $e){
             return "Error :" . $e->getMessage();
         }finally{
@@ -83,7 +83,7 @@ class Users {
     public function logout(){
         session_unset();
         session_destroy();
-        header('localtion: /Index.php');
+        header('location: Login.php');
         exit;
     }
 
