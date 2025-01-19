@@ -55,4 +55,33 @@ class Cours{
         }
     }
 
+    public function addCours(){
+        $db = new Connection("localhost","root","","youdemy");
+        $conn = $db->getConnection();
+        try{
+            $stmt = $conn->prepare("INSERT INTO cours(title, descriptions, contenu, created_at, user_id, category_id)
+                                                VALUES(?, ?, ?, ?, ?, ?)");
+            $stmt->bindParam(1, $this->title, PDO::PARAM_STR);
+            $stmt->bindParam(2, $this->descriptions, PDO::PARAM_STR);
+            $stmt->bindParam(3, $this->containt, PDO::PARAM_STR);
+            $stmt->bindParam(4, $this->created_at, PDO::PARAM_STR);
+            $stmt->bindParam(5, $this->enseignant, PDO::PARAM_STR);
+            $stmt->bindParam(6, $this->category, PDO::PARAM_STR);
+
+            $result = $stmt->execute();
+            if($result){
+                echo "<script>alert('cours added')</script>";
+            }else{
+                echo "<script>alert('added failed')</script>";
+            }
+        }catch(PDOException $e){
+            throw new Exception("Error") .$e->getMessage();
+        }finally{
+            $conn = null;
+        }
+    }
+
+    public function displayCours(){
+
+    }
 }
