@@ -1,3 +1,47 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Users.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Category.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['email']) || !isset($_SESSION['role'])) {
+    header('Location: Login.php');
+    exit;
+}
+
+$user = new Users();
+$users = $user->getUsers();
+$students = $user->getEtudiant() ?? [];
+$teacher = $user->getEnseignant() ?? [];
+
+
+$category = new Category();
+$cats = $category->displayCategories();
+
+if (isset($_POST['add_category'])) {
+
+    $cat_name = $_POST['new_category'];
+    if (!empty($cat_name)) {
+        $category->setCategoryName($cat_name);
+        $res = $category->addCategory();
+        if ($res) {
+            echo "<script>alert('Category added')</script>";
+            header('Location: ' . $_SERVER['PHP_SELF']);
+            exit;
+        }
+    } else {
+        echo "<script>alert('Category Failed !!')</script>";
+    }
+}
+
+
+if (isset($_POST['exit'])) {
+    $user->logout();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,9 +52,10 @@
     <title>Youdemy - Admin</title>
 </head>
 
-<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/Asset/Image-01.jpg');">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/Asset/Images/Image-01.jpg');">
     <div class="fixed inset-0 bg-black bg-opacity-50 z-0"></div>
 
+    <!-- Barre latérale -->
     <aside class="bg-blue-950 h-screen fixed left-0 top-0 shadow-xl z-10 transition-all duration-300 lg:w-64 w-16">
         <div class="p-4 lg:p-6">
             <h1 class="text-white text-2xl font-bold mb-8 hidden lg:block">Youdemy Admin</h1>
@@ -20,32 +65,35 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                        <span class="hidden lg:inline ml-3">Users</span>
+                        <span class="hidden lg:inline ml-4">Users</span>
                     </button>
 
                     <button type="button" class="bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center lg:justify-start p-0 lg:px-6 lg:py-3 group">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
                         </svg>
-                        <span class="hidden lg:inline ml-3">Category</span>
+                        <span class="hidden lg:inline ml-4">Category</span>
                     </button>
 
                     <button name="exit" class="mt-4 bg-indigo-900 text-white rounded-lg hover:bg-indigo-800 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center lg:justify-start p-0 lg:px-6 lg:py-3 group">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        <span class="hidden lg:inline ml-3">Logout</span>
+                        <span class="hidden lg:inline ml-4">Logout</span>
                     </button>
                 </div>
             </form>
         </div>
     </aside>
 
+    <!-- Contenu principal -->
     <main class="relative lg:ml-64 ml-16 min-h-screen p-1 lg:p-8 z-10">
+        <!-- Gestion des utilisateurs -->
         <section class="bg-white/20 rounded-2xl shadow-xl p-8 mb-8 backdrop-blur-md">
             <div class="space-y-8">
                 <h2 class="text-3xl font-bold text-white drop-shadow-md">Users Management</h2>
 
+                <!-- Cartes de statistiques -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-gradient-to-br from-white/90 to-white/70 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
                         <button name="displayAll" class="w-full p-2 lg:p-6 text-left group-hover:scale-[1.02] transition-transform duration-300">
@@ -91,39 +139,42 @@
                     </div>
                 </div>
 
+                <!-- Tableau des utilisateurs -->
                 <div class="overflow-x-auto rounded-xl shadow-lg">
                     <table class="min-w-full bg-white/80 backdrop-blur-sm">
                         <thead class="bg-gray-300">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Roles</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date d'inscription</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Roles</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+                                <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <?php foreach ($users as $user): ?>
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['users_id']) ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['f_name'] . ' ' . $user['l_name']) ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['email']) ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['users_id']) ?></td>
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['f_name'] . ' ' . $user['l_name']) ?></td>
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['email']) ?></td>
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap">
                                         <span class="inline-block w-24 text-center px-4 py-1.5 text-sm text-white rounded-full <?= $user['roles'] == "admin" ? "bg-indigo-900" : "bg-blue-500" ?>">
                                             <?= htmlspecialchars($user['roles']) ?>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['created_at']) ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($user['created_at']) ?></td>
+                                    <td class="px-4 py-2 lg:px-6 lg:py-4 whitespace-nowrap">
                                         <?php if ($user['roles'] != 'admin'): ?>
                                             <div class="flex space-x-2">
-                                                <button class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-all duration-300 text-sm font-medium">
-                                                    Edit
+                                                <button name="suspend_stats" class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-all duration-300 text-sm font-medium">
+                                                    <?= $user['is_suspended'] ? 'Activate' : 'Suspend' ?>
                                                 </button>
-                                                <button class="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-sm font-medium">
-                                                    Delete
-                                                </button>
+                                                <?php if (!$user['is_deleted']): ?>
+                                                    <button class="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-sm font-medium">
+                                                        Delete
+                                                    </button>
+                                                <?php endif ?>
                                             </div>
                                         <?php endif ?>
                                     </td>
@@ -135,19 +186,47 @@
             </div>
         </section>
 
+        <!-- Gestion des catégories -->
         <section class="bg-white/20 rounded-2xl shadow-xl p-8 mb-8 backdrop-blur-md">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-white drop-shadow-md">Category Management</h2>
-                <button id="add" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group">
+                <button id="add" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Add Category</span>
+                    <span class="hidden sm:inline">Add Category</span><span>(<?= count($cats) ?>)</span>
                 </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Tableau des catégories -->
+                <div class="lg:col-span-3">
+                    <div class="overflow-x-auto rounded-xl shadow-lg">
+                        <table class="min-w-full bg-white/80 backdrop-blur-sm">
+                            <thead class="bg-gray-300">
+                                <tr>
+                                    <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Categorie</th>
+                                    <th class="px-4 py-2 lg:px-6 lg:py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date d'ajoute</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <?php foreach ($cats as $cat): ?>
+                                    <tr class="hover:bg-gray-50/50 transition-colors duration-200">
+                                        <td class="px-2 py-1 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($cat['category_id']) ?></td>
+                                        <td class="px-2 py-1 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($cat['category_name']) ?></td>
+                                        <td class="px-2 py-1 lg:px-6 lg:py-4 whitespace-nowrap text-sm text-gray-700"><?= htmlspecialchars($cat['created_at']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+    <!-- Modal pour ajouter une catégorie -->
     <div id="add_cat" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all animate-modalSlideIn">
             <div class="flex items-center justify-between p-6 border-b border-gray-100">
