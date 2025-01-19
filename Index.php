@@ -1,4 +1,5 @@
 <?php
+
 if (isset($_POST['login'])) {
     header('location: Views/Login.php');
     exit;
@@ -27,19 +28,27 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
 <body class="min-h-screen bg-slate-50">
     <header class="w-full fixed top-0 left-0 py-4 z-10">
         <div class="relative px-4">
-            <nav class="flex justify-between items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg px-8 py-4">
-                <div>
-                    <h1 class="text-3xl font-bold text-blue-900">You<span class="text-blue-500">demy</span></h1>
+            <nav class="flex flex-col sm:flex-row justify-between items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 space-y-4 sm:space-y-0">
+
+                <div class="w-full sm:w-auto flex justify-between items-center">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-blue-900">You<span class="text-blue-500">demy</span></h1>
+
+                    <button id="menuToggle" class="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
-                <form method="post" class="space-x-4">
-                    <button type="submit" name="login"
-                        class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 shadow-md hover:shadow-lg transition-all duration-300">
-                        Connexion
-                    </button>
-                    <button type="submit" name="register"
-                        class="px-6 py-3 bg-indigo-800 text-white font-semibold rounded-lg hover:bg-indigo-900 shadow-md hover:shadow-lg transition-all duration-300">
-                        Inscription
-                    </button>
+
+                <form method="post" class="w-full sm:w-auto hidden sm:block" id="navContent">
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button type="submit" name="login" class="w-full sm:w-auto px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 shadow-md hover:shadow-lg transition-all duration-300">
+                            Connexion
+                        </button>
+                        <button type="submit" name="register" class="w-full sm:w-auto px-6 py-3 bg-indigo-800 text-white font-semibold rounded-lg hover:bg-indigo-900 shadow-md hover:shadow-lg transition-all duration-300">
+                            Inscription
+                        </button>
+                    </div>
                 </form>
             </nav>
         </div>
@@ -65,7 +74,7 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
             </div>
             <div class="flex-1">
                 <div class="rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
-                    <img src="/Asset/Images/Image-01.jpg" alt="Illustration apprentissage" class="object-cover w-full h-[400px]">
+                    <img src="/Asset/Image-01.jpg" alt="Illustration apprentissage" class="object-cover w-full h-[400px]">
                 </div>
             </div>
         </section>
@@ -89,6 +98,8 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
             </div>
         </section>
     </main>
+    
+    <script src="/Js/script.js"></script>
 </body>
 
 </html>
