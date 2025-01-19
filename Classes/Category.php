@@ -33,6 +33,30 @@ class Category{
             $db->closeConnection();
         }
     }
+    public function addCategory(){
+        try {
+            $db = new Connection();
+            $conn = $db->getConnection();
+    
+            if (!$this->isExist()) {
+                $stmt = $conn->prepare("INSERT INTO category (category_name) VALUES (:category_name)");
+                $stmt->bindParam(':category_name', $this->category_name);
+                $result = $stmt->execute();
+    
+                if ($result) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return "Error: " . $e->getMessage();
+        } finally {
+            $db->closeConnection();
+        }
+    }
 
     
 }
