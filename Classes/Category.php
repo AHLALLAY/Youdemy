@@ -78,6 +78,24 @@ class Category{
             $conn = null;
         }
     }
-
+    
+    public function displayCategories(){
+        $db = new Connection("localhost","root","","youdemy");
+        $conn = $db->getConnection();
+        try{
+            $stmt = $conn->prepare("SELECT*FROM category");
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if($result){
+                return $result;
+            }else{
+                echo "<script>alert('category not found')</script>";
+            }
+        }catch(PDOException $e){
+            throw new Exception("Error") .$e->getMessage();
+        }finally{
+            $conn = null;
+        }
+    }
     
 }
