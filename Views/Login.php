@@ -45,6 +45,10 @@ if (isset($_POST['login'])) {
         $_SESSION['error'] = "Email and password are required.";
     }
 }
+if(isset($_POST['exit'])){
+    header('location: /Index.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
