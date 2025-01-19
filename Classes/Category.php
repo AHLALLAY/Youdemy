@@ -58,5 +58,26 @@ class Category{
         }
     }
 
+    public function getCategoryId(){
+        $db = new Connection("localhost","root","","youdemy");
+        $conn = $db->getConnection();
+        try{
+            $stmt = $conn->prepare("SELECT category_id FROM category WHERE category_name = ?");
+            $stmt->bindParam(1, $this->category_name, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                return $result['category_id'];
+            }else{
+                echo "<script>alert('category not found')</script>";
+            }
+        }catch(PDOException $e){
+            throw new Exception("Error") .$e->getMessage();
+        }finally{
+            $conn = null;
+        }
+    }
+
     
 }
