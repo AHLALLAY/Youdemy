@@ -26,6 +26,7 @@ class Users {
     // Modificateurs (Setters)
     public function setFName($f_name) { $this->f_name = $f_name; }
     public function setLName($l_name) { $this->l_name = $l_name; }
+    public function setEmail($email) { $this->email = $email; }
     public function setPwd($pwd_hashed) { $this->pwd_hashed = $pwd_hashed; }
     public function setRoles($roles) { $this->roles = $roles; }
 
@@ -52,30 +53,49 @@ class Users {
     }
 
     public function login() {
+        ob_start(); // Démarre la temporisation de sortie pour éviter les erreurs d'en-têtes
+    
         if (empty($this->email) || empty($this->pwd_hashed)) {
             throw new Exception("Email and password are required.");
         }
-
-        try{
+    
+        try {
             $db = new Connection();
             $conn = $db->getConnection();
     
-            $stmt = $conn->prepare("SELECT email, pwd_hashed, roles FROM users WHERE email = ?");
+            // Récupérer l'utilisateur
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
             $stmt->execute([$this->email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
             if (!$user) {
-                throw new Exception("No user found.");
+                throw new Exception("No user found with this email.");
             }
     
+            // Vérifier si l'utilisateur est suspendu
+            if ($user['is_suspended']) {
+                var_dump($user['is_suspended']); // Debug
+                header('Location: /Views/401.php');
+                exit;
+            }
+    
+            // Vérifier si l'utilisateur est supprimé
+            if ($user['is_deleted']) {
+                header('Location: /Views/403.php');
+                exit;
+            }
+    
+            // Vérifier le mot de passe
             if (!password_verify($this->pwd_hashed, $user['pwd_hashed'])) {
                 throw new Exception("Email or password incorrect.");
             }
     
-            return $user['roles'];
-        }catch(PDOException $e){
-            return "Error :" . $e->getMessage();
-        }finally{
+            // Retourner les informations de l'utilisateur
+            return $user;
+    
+        } catch (PDOException $e) {
+            throw new Exception("Database error: " . $e->getMessage());
+        } finally {
             $db->closeConnection();
         }
     }
@@ -176,6 +196,117 @@ class Users {
     
         } catch(PDOException $e) {
             echo "Error : " . $e->getMessage();
+        }finally{
+            $db->closeConnection();
+        }
+    }
+
+    public function suspendsStatus(){
+        try{
+            $db = new Connection();
+            $conn = $db->getConnection();
+
+            $stmt = $conn->prepare("SELECT is_suspended FROM users WHERE email = :email");
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+            
+        }catch(PDOException $e){
+            echo "Error : ".$e->getMessage();
+        }finally{
+            $db->closeConnection();
+        }
+    }
+
+    public function Suspend(){
+        try{
+            $db = new Connection();
+            $conn = $db->getConnection();
+
+            $stmt = $conn->prepare("SELECT*FROM users WHERE email = :email");
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if(!$result['is_suspended']){
+                $stmt = $conn->prepare("UPDATE users SET is_suspended = 1 WHERE email = :email");
+                $stmt->bindParam(':email', $this->email);
+                $stmt->execute();
+            }
+            
+        }catch(PDOException $e){
+            echo "Error : ".$e->getMessage();
+        }finally{
+            $db->closeConnection();
+        }
+    }
+
+    public function Activate(){
+        try{
+            $db = new Connection();
+            $conn = $db->getConnection();
+
+            $stmt = $conn->prepare("SELECT*FROM users WHERE email = :email");
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if($result['is_suspended']){
+                $stmt = $conn->prepare("UPDATE users SET is_suspended = 0 WHERE email = :email");
+                $stmt->bindParam(':email', $this->email);
+                $stmt->execute();
+            }
+            
+        }catch(PDOException $e){
+            echo "Error : ".$e->getMessage();
+        }finally{
+            $db->closeConnection();
+        }
+    }
+
+    public function deleteUser(){
+        try{
+            $db = new Connection();
+            $conn = $db->getConnection();
+
+            $stmt = $conn->prepare("SELECT*FROM users WHERE email = :email");
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if(!$result['is_deleted']){
+                $stmt = $conn->prepare("UPDATE users SET is_deleted = 1 WHERE email = :email");
+                $stmt->bindParam(':email', $this->email);
+                $stmt->execute();
+            }
+            
+        }catch(PDOException $e){
+            echo "Error : ".$e->getMessage();
+        }finally{
+            $db->closeConnection();
+        }
+    }
+
+    public function deleteStats(){
+        try{
+            $db = new Connection();
+            $conn = $db->getConnection();
+
+            $stmt = $conn->prepare("SELECT*FROM users WHERE email = :email");
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result['is_deleted'];
+            
+        }catch(PDOException $e){
+            echo "Error : ".$e->getMessage();
         }finally{
             $db->closeConnection();
         }

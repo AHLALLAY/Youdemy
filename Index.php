@@ -1,4 +1,11 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Cours.php';
+
+$cours = new Cours();
+$courses = $cours->displayNonDeletedCours();
+
+
 
 if (isset($_POST['login'])) {
     header('location: Views/Login.php');
@@ -29,10 +36,11 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
     <header class="w-full fixed top-0 left-0 py-4 z-10">
         <div class="relative px-4">
             <nav class="flex flex-col sm:flex-row justify-between items-center bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 space-y-4 sm:space-y-0">
-
+                <!-- Logo Section -->
                 <div class="w-full sm:w-auto flex justify-between items-center">
                     <h1 class="text-2xl sm:text-3xl font-bold text-blue-900">You<span class="text-blue-500">demy</span></h1>
 
+                    <!-- Menu Button for Mobile -->
                     <button id="menuToggle" class="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -40,6 +48,7 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
                     </button>
                 </div>
 
+                <!-- Navigation Links and Buttons -->
                 <form method="post" class="w-full sm:w-auto hidden sm:block" id="navContent">
                     <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                         <button type="submit" name="login" class="w-full sm:w-auto px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 shadow-md hover:shadow-lg transition-all duration-300">
@@ -85,20 +94,23 @@ if (isset($_POST['cours']) || isset($_POST['explorer'])) {
                 <form method="post"><button type="submit" name="cours" class="text-blue-500 hover:text-blue-600 font-semibold">Voir tous les cours</button></form>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <article class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-200 flex flex-col">
-                    <div class="relative mb-4 rounded-lg overflow-hidden">
-                        <img src="/Asset/course-1.jpg" alt="Développement Web" class="w-full h-48 object-cover">
-                    </div>
-                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Développement Web Full-Stack</h3>
-                    <p class="text-slate-600 mb-4">Maîtrisez HTML, CSS, JavaScript et les frameworks modernes.</p>
-                    <div class="mt-auto flex justify-between items-center">
-                        <span class="text-blue-500 font-semibold">45h de cours</span>
-                    </div>
-                </article>
+                <?php if (is_array($courses) && !empty($courses)): ?>
+                    <?php foreach ($courses as $cor): ?>
+                        <article class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-200 flex flex-col">
+                            <div class="relative mb-4 rounded-lg overflow-hidden">
+                                <img src="/Asset/course-1.jpg" alt="Développement Web" class="w-full h-48 object-cover">
+                            </div>
+                            <h3 class="text-xl font-semibold text-slate-900 mb-2"><?= htmlspecialchars($cor['title']) ?></h3>
+                            <p class="text-slate-600 mb-4"><?= htmlspecialchars($cor['descriptions']) ?></p>
+                        </article>
+                    <?php endforeach ?>
+                <?php else: ?>
+                    <p class="text-slate-600">Aucun cours disponible pour le moment.</p>
+                <?php endif ?>
             </div>
         </section>
     </main>
-    
+
     <script src="/Js/script.js"></script>
 </body>
 

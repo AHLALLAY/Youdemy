@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Users.php';
 
-$db = new Connection("localhost", "root", "", "youdemy");
+$db = new Connection();
 $db->getConnection();
 
 
@@ -52,13 +52,13 @@ if (isset($_POST['exit'])) {
     <title>Register - Youdemy</title>
 </head>
 
-<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Images/Image-01.jpg');">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center select-none" style="background-image: url('/Asset/Image-01.jpg');">
 
     <div class="absolute inset-0 bg-black opacity-50"></div>
 
     <div class="relative z-10 w-full max-w-md p-6">
         <main>
-            <form method="post" class="bg-[#011047]/40 backdrop-blur-md rounded-lg px-8 pt-6 pb-8 shadow-xl">
+            <form method="post" enctype="multipart/form-data" class="bg-[#011047]/40 backdrop-blur-md rounded-lg px-8 pt-6 pb-8 shadow-xl">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-[#FEFEFE] text-4xl font-bold">Register</h2>
                     <button name="exit" class="text-[#FEFEFE] text-3xl hover:text-[#B4CAE2] transition-colors duration-300">&times;</button>
