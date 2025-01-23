@@ -55,7 +55,7 @@ La plateforme de cours en ligne **Youdemy** vise à révolutionner l'apprentissa
   - <span style="color:green; font-weight:bold">Le cours avec le plus d'étudiants</span>
   - <span style="color:red; font-style:italic">Les Top 3 enseignants</span>
 
-# Statistiques selon les couleurs
+# Statistiques
 
 - **Fonctionnalités en vert (<span style="color:green; font-weight:bold">vert</span>) :**
     * Visiteur
